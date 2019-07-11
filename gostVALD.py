@@ -40,7 +40,7 @@ class netVLAD(nn.Module):
             x=F.normalize(x,p=2,dim=0)
         soft_assign=self.fc(x).unsqueeze(0).permute(0,2,1)#(10,8)->(1,10,8)->(1,8,10)
         soft_assign=F.softmax(soft_assign,dim=1) #nn.Softmax(dim=1)
-        x_flatten=x.view(1,C,-1)
+        x_flatten=x.unsqueeze(0).permute(0,2,1)
         #print(x_flatten.shape)
         #print(x_flatten.expand(self.num_clusters, -1, -1, -1).permute(1, 0, 2, 3).shape)
         #print(self.centroids.expand(x_flatten.size(-1), -1, -1).permute(1, 2, 0).unsqueeze(0).shape)
@@ -135,7 +135,7 @@ class gostVLAD(nn.Module):
  
         soft_assign=soft_assign[:,:self.num_clusters,:]#(1,8,10)
 
-        x_flatten=x.view(1,C,-1)
+        x_flatten=x.unsqueeze(0).permute(0,2,1)
         residual = x_flatten.expand(self.num_clusters, -1, -1, -1).permute(1, 0, 2, 3) - \
             self.centroids.expand(x_flatten.size(-1), -1, -1).permute(1, 2, 0).unsqueeze(0)
         residual *= soft_assign.unsqueeze(2)                
